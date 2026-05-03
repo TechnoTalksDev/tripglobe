@@ -9,8 +9,9 @@ async function setup() {
 
   const client = createClient({ url })
 
+  await client.execute(`DROP TABLE IF EXISTS locations`)
   await client.execute(`
-    CREATE TABLE IF NOT EXISTS locations (
+    CREATE TABLE locations (
       id           TEXT    PRIMARY KEY NOT NULL,
       name         TEXT    NOT NULL,
       lat          REAL    NOT NULL,
@@ -21,7 +22,7 @@ async function setup() {
     )
   `)
 
-  console.log("✓ Table ready")
+  console.log("✓ Table created (existing data cleared)")
   console.log("✓ Setup complete\n")
   process.exit(0)
 }

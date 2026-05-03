@@ -293,7 +293,7 @@ export default function Page() {
             className="text-[20px] font-bold tracking-[0.22em] text-gray-900 uppercase"
             style={{ fontFamily: "var(--font-syne), sans-serif" }}
           >
-            trip<span style={{ color: ACCENT }}>globe</span>
+            senior<span style={{ color: ACCENT }}>globe</span>
           </h1>
           <div className="flex items-center gap-0.5 rounded-full border border-gray-200 bg-white p-1 shadow-sm">
             {(["globe", "map"] as const).map((v) => (
@@ -316,7 +316,7 @@ export default function Page() {
               className="pointer-events-none z-10 mb-[-5rem] bg-gradient-to-b from-gray-900 to-gray-400/80 bg-clip-text text-center text-8xl leading-none font-bold text-transparent"
               style={{ fontFamily: "var(--font-syne), sans-serif" }}
             >
-              senior trip
+              {sorted[0]?.name ?? "where"}?
             </span>
             <div className="relative aspect-square w-full max-w-[680px]">
               <GlobeCanvas locations={locations} topId={topId} />
