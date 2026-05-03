@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(bunx tsc *)",
+      "mcp__magicuidesign-mcp__searchRegistryItems",
+      "WebFetch(domain:cobe.vercel.app)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "magicuidesign-mcp"
+  ]
+}
