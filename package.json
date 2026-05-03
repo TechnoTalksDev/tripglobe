@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "type": "module",
   "private": true,
+  "packageManager": "bun@1.2.13",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "start": "bun run setup && next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
