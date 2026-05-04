@@ -225,10 +225,11 @@ export default function Page() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  // load from DB on mount
+  // load from DB on mount, merging persisted votes from localStorage
   useEffect(() => {
+    const voted = new Set<string>(JSON.parse(localStorage.getItem("tripglobe-votes") ?? "[]"))
     getLocations().then((rows) =>
-      setLocations(rows.map((r) => ({ ...r, upvoted: false })))
+      setLocations(rows.map((r) => ({ ...r, upvoted: voted.has(r.id) })))
     )
   }, [])
 
@@ -239,14 +240,17 @@ export default function Page() {
     const loc = locations.find((l) => l.id === id)
     if (!loc) return
     const delta = loc.upvoted ? -1 : 1
-    // optimistic update
+    const nowUpvoted = !loc.upvoted
     setLocations((locs) =>
       locs.map((l) =>
         l.id === id
-          ? { ...l, upvotes: l.upvotes + delta, upvoted: !l.upvoted }
+          ? { ...l, upvotes: l.upvotes + delta, upvoted: nowUpvoted }
           : l,
       ),
     )
+    const voted = new Set<string>(JSON.parse(localStorage.getItem("tripglobe-votes") ?? "[]"))
+    if (nowUpvoted) voted.add(id); else voted.delete(id)
+    localStorage.setItem("tripglobe-votes", JSON.stringify([...voted]))
     changeUpvote(id, delta as 1 | -1)
   }
 
