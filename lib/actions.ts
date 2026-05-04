@@ -24,3 +24,7 @@ export async function changeUpvote(id: string, delta: 1 | -1): Promise<void> {
     .set({ upvotes: sql`max(0, ${locations.upvotes} + ${delta})` })
     .where(eq(locations.id, id))
 }
+
+export async function deleteLocation(id: string): Promise<void> {
+  await db.delete(locations).where(eq(locations.id, id))
+}

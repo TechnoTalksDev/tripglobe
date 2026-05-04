@@ -7,7 +7,7 @@ import { DottedMap, type Marker } from "@/components/ui/dotted-map"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Input } from "@/components/ui/input"
 import { ArrowUp, MapPin, Loader2, Send } from "lucide-react"
-import { getLocations, createLocation, changeUpvote } from "@/lib/actions"
+import { getLocations, createLocation, changeUpvote, deleteLocation } from "@/lib/actions"
 
 const syne = Syne({ subsets: ["latin"], variable: "--font-syne", display: "swap" })
 const dmMono = DM_Mono({
@@ -241,10 +241,19 @@ export default function Page() {
     if (!loc) return
     const delta = loc.upvoted ? -1 : 1
     const nowUpvoted = !loc.upvoted
+    const newUpvotes = loc.upvotes + delta
+    if (newUpvotes <= 0) {
+      setLocations((locs) => locs.filter((l) => l.id !== id))
+      const voted = new Set<string>(JSON.parse(localStorage.getItem("tripglobe-votes") ?? "[]"))
+      voted.delete(id)
+      localStorage.setItem("tripglobe-votes", JSON.stringify([...voted]))
+      deleteLocation(id)
+      return
+    }
     setLocations((locs) =>
       locs.map((l) =>
         l.id === id
-          ? { ...l, upvotes: l.upvotes + delta, upvoted: nowUpvoted }
+          ? { ...l, upvotes: newUpvotes, upvoted: nowUpvoted }
           : l,
       ),
     )
