@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_FILE_NAME=file:/app/data/local.db
+    volumes:
+      - tripglobe-db:/app/data
+
+volumes:
+  tripglobe-db:

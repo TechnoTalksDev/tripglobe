@@ -4,7 +4,8 @@
       "Bash(npx tsc *)",
       "Bash(bunx tsc *)",
       "mcp__magicuidesign-mcp__searchRegistryItems",
-      "WebFetch(domain:cobe.vercel.app)"
+      "WebFetch(domain:cobe.vercel.app)",
+      "WebSearch"
     ]
   },
   "enableAllProjectMcpServers": true,
