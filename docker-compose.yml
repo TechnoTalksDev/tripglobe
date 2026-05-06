@@ -5,6 +5,7 @@ services:
       - "5462:3000"
     environment:
       - DB_FILE_NAME=file:/app/data/local.db
+      - NEXT_PUBLIC_CITY=Seattle
     volumes:
       - tripglobe-db:/app/data
 
