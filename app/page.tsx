@@ -336,16 +336,16 @@ export default function Page() {
 
   return (
     <div
-      className={`${syne.variable} ${dmMono.variable} flex h-screen overflow-hidden bg-white`}
+      className={`${syne.variable} ${dmMono.variable} flex h-[100dvh] flex-col overflow-hidden bg-white md:flex-row`}
       style={{ fontFamily: "var(--font-dm-mono), monospace" }}
     >
-      {/* ── left: visualization ── */}
-      <div className="relative flex-1 overflow-hidden bg-[#f6f7f9]">
+      {/* ── visualization (top on mobile, left on desktop) ── */}
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-[#f6f7f9]">
 
         {/* top bar */}
-        <div className="absolute top-0 right-0 left-0 z-20 flex items-center justify-between px-8 py-6">
+        <div className="absolute top-0 right-0 left-0 z-20 flex items-center justify-between px-5 py-4 md:px-8 md:py-6">
           <h1
-            className="text-[20px] font-bold tracking-[0.22em] text-gray-900 uppercase"
+            className="text-[18px] font-bold tracking-[0.22em] text-gray-900 uppercase md:text-[20px]"
             style={{ fontFamily: "var(--font-syne), sans-serif" }}
           >
             senior<span style={{ color: ACCENT }}>globe</span>
@@ -355,7 +355,7 @@ export default function Page() {
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className="rounded-full px-5 py-1.5 text-[11px] uppercase tracking-[0.15em] transition-all"
+                className="rounded-full px-4 py-1.5 text-[11px] uppercase tracking-[0.15em] transition-all md:px-5"
                 style={view === v ? { background: ACCENT, color: "white" } : { color: "#9ca3af" }}
               >
                 {v}
@@ -366,9 +366,9 @@ export default function Page() {
 
         {/* ── globe view ── */}
         {view === "globe" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden pt-16 md:pt-0">
             <span
-              className="pointer-events-none z-10 mb-[-5rem] bg-gradient-to-b from-gray-900 to-gray-400/80 bg-clip-text text-center text-8xl leading-none font-bold text-transparent"
+              className="pointer-events-none z-10 mb-[-3rem] bg-gradient-to-b from-gray-900 to-gray-400/80 bg-clip-text text-center text-5xl leading-none font-bold text-transparent md:mb-[-5rem] md:text-8xl"
               style={{ fontFamily: "var(--font-syne), sans-serif" }}
             >
               {sorted[0]?.name ?? "where"}?
@@ -382,7 +382,7 @@ export default function Page() {
 
         {/* ── map view ── */}
         {view === "map" && (
-          <div className="absolute inset-0 flex items-center justify-center px-12 py-24">
+          <div className="absolute inset-0 flex items-center justify-center px-6 py-16 md:px-12 md:py-24">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#f6f7f9_95%)]" />
             <DottedMap<MapMarkerData>
               markers={mapMarkers}
@@ -423,20 +423,20 @@ export default function Page() {
         )}
       </div>
 
-      {/* ── right: sidebar feed ── */}
-      <div className="flex w-[340px] shrink-0 flex-col border-l border-gray-100 bg-white">
+      {/* ── sidebar (bottom on mobile, right on desktop) ── */}
+      <div className="flex shrink-0 flex-col border-t border-gray-100 bg-white md:h-auto md:w-[340px] md:border-t-0 md:border-l">
 
-        <div className="flex items-center gap-2 border-b border-gray-100 px-6 py-5">
+        <div className="flex items-center gap-2 border-b border-gray-100 px-5 py-4 md:px-6 md:py-5">
           <MapPin size={13} style={{ color: ACCENT }} />
           <span className="text-[10px] tracking-[0.18em] text-gray-400 uppercase">Locations</span>
           <span className="ml-auto text-[11px] tabular-nums" style={{ color: ACCENT }}>{locations.length}</span>
         </div>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="max-h-[35dvh] md:max-h-none md:flex-1">
           {sorted.map((loc, i) => (
             <div
               key={loc.id}
-              className="flex items-center gap-3 border-b border-gray-50 px-6 py-3.5 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-3 border-b border-gray-50 px-5 py-3.5 transition-colors hover:bg-gray-50 md:px-6"
             >
               <span className="w-5 shrink-0 text-right text-[10px] tabular-nums text-gray-300">
                 {String(i + 1).padStart(2, "0")}
@@ -461,7 +461,7 @@ export default function Page() {
           ))}
         </ScrollArea>
 
-        <div className="border-t border-gray-100 px-6 py-6">
+        <div className="border-t border-gray-100 px-5 py-4 md:px-6 md:py-6">
           {error && <p className="mb-3 text-[11px] text-red-500">{error}</p>}
           <div className="flex gap-2">
             <Input
