@@ -75,6 +75,7 @@ async function geocode(city: string): Promise<{
 interface GlobeCanvasProps {
   locations: Location[]
   topId: string | undefined
+  origin: { lat: number; lng: number; name: string; countryCode: string } | null
 }
 
 const LABEL_CSS = `
@@ -122,9 +123,28 @@ const LABEL_CSS = `
   }
 `
 
-function GlobeCanvas({ locations, topId }: GlobeCanvasProps) {
+function GlobeCanvas({ locations, topId, origin }: GlobeCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const globeRef = useRef<ReturnType<typeof createGlobe> | null>(null)
+
+  const buildArcs = (locs: Location[], org: typeof origin) =>
+    org
+      ? locs.map((l) => ({
+          from: [org.lat, org.lng] as [number, number],
+          to: [l.lat, l.lng] as [number, number],
+        }))
+      : []
+
+  const buildMarkers = (locs: Location[], org: typeof origin) => [
+    ...locs.map((l) => ({
+      id: `loc-${l.id}`,
+      location: [l.lat, l.lng] as [number, number],
+      size: 0.001,
+    })),
+    ...(org
+      ? [{ id: "origin", location: [org.lat, org.lng] as [number, number], size: 0.001 }]
+      : []),
+  ]
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -148,11 +168,11 @@ function GlobeCanvas({ locations, topId }: GlobeCanvasProps) {
       markerColor: [20 / 255, 189 / 255, 235 / 255] as [number, number, number],
       glowColor: [0.94, 0.95, 0.97] as [number, number, number],
       opacity: 1,
-      markers: locations.map((l) => ({
-        id: `loc-${l.id}`,
-        location: [l.lat, l.lng] as [number, number],
-        size: 0.001,
-      })),
+      markers: buildMarkers(locations, origin),
+      arcs: buildArcs(locations, origin),
+      arcColor: [20 / 255, 189 / 255, 235 / 255] as [number, number, number],
+      arcWidth: 0.5,
+      arcHeight: 0.35,
     })
 
     globeRef.current = globe
@@ -177,13 +197,10 @@ function GlobeCanvas({ locations, topId }: GlobeCanvasProps) {
   useEffect(() => {
     if (!globeRef.current) return
     globeRef.current.update({
-      markers: locations.map((l) => ({
-        id: `loc-${l.id}`,
-        location: [l.lat, l.lng] as [number, number],
-        size: 0.001,
-      })),
+      markers: buildMarkers(locations, origin),
+      arcs: buildArcs(locations, origin),
     })
-  }, [locations])
+  }, [locations, origin])
 
   return (
     <div className="relative h-full w-full">
@@ -211,6 +228,23 @@ function GlobeCanvas({ locations, topId }: GlobeCanvasProps) {
           </div>
         )
       })}
+      {origin && (
+        <div
+          className="cobe-city-label"
+          style={{
+            positionAnchor: "--cobe-origin",
+            opacity: `var(--cobe-visible-origin, 0)`,
+            filter: `blur(calc((1 - var(--cobe-visible-origin, 0)) * 8px))`,
+          } as React.CSSProperties}
+        >
+          <img
+            src={`https://flagcdn.com/w40/${origin.countryCode}.webp`}
+            alt={origin.countryCode}
+            className="cobe-flag"
+          />
+          <span className="cobe-city-pill">{origin.name}</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -224,6 +258,7 @@ export default function Page() {
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [origin, setOrigin] = useState<{ lat: number; lng: number; name: string; countryCode: string } | null>(null)
 
   // load from DB on mount, merging persisted votes from localStorage
   useEffect(() => {
@@ -231,6 +266,13 @@ export default function Page() {
     getLocations().then((rows) =>
       setLocations(rows.map((r) => ({ ...r, upvoted: voted.has(r.id) })))
     )
+  }, [])
+
+  // geocode origin city from env
+  useEffect(() => {
+    const city = process.env.NEXT_PUBLIC_CITY
+    if (!city) return
+    geocode(city).then((r) => { if (r) setOrigin(r) })
   }, [])
 
   const sorted = [...locations].sort((a, b) => b.upvotes - a.upvotes)
@@ -332,7 +374,7 @@ export default function Page() {
               {sorted[0]?.name ?? "where"}?
             </span>
             <div className="relative aspect-square w-full max-w-[680px]">
-              <GlobeCanvas locations={locations} topId={topId} />
+              <GlobeCanvas locations={locations} topId={topId} origin={origin} />
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#f6f7f9] to-transparent" />
           </div>

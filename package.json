@@ -14,7 +14,8 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "setup": "bun scripts/setup.ts"
+    "setup": "bun scripts/setup.ts",
+    "reset": "bun scripts/reset.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
